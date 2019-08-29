@@ -61,6 +61,22 @@ var width = 900,
     height = 510,
     root;
 
+function detectmob() {
+ if( navigator.userAgent.match(/Android/i)
+ || navigator.userAgent.match(/webOS/i)
+ || navigator.userAgent.match(/iPhone/i)
+ || navigator.userAgent.match(/iPad/i)
+ || navigator.userAgent.match(/iPod/i)
+ || navigator.userAgent.match(/BlackBerry/i)
+ || navigator.userAgent.match(/Windows Phone/i)
+ ){
+    return true;
+  }
+ else {
+    return false;
+  }
+} 
+
 function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -169,6 +185,8 @@ function color(d) {
       : "#fd8d3c"; // leaf node
 }
 
+
+
 // Toggle children on click.
 function click(d) {
   if (d3.event.defaultPrevented) return; // ignore drag
@@ -176,7 +194,11 @@ function click(d) {
   	//url = d.location+ "?fn=" + d.name + "&u=" + user + "&c=File";
   	//window.open(encodeURI(url));
   	//url = "viewer.html?v=" + d.location+ "&fn=" + d.name + "&u=" + user + "&c=File";
-  	url = "viewer.html?v=" + d.location+ "&fn=" + d.name + "&u=" + user + "&c=" + summary_type;
+        if (detectmob()) {
+  	  url = d.location+ "?fn=" + d.name + "&u=" + user + "&c=" + summary_type;
+        } else {
+  	  url = "viewer.html?v=" + d.location+ "&fn=" + d.name + "&u=" + user + "&c=" + summary_type;
+        }
   	window.open(encodeURI(url));
   }
   if (d.children) {
@@ -208,14 +230,27 @@ function flatten(root) {
       .on("change", change);
   function change() {
     var s;
+    var m = false;
+    if (detectmob()) {
+       m = true;
+    }
     if (summary_type.match(/cat/i)) {
       summary_type = 'File';
-      s = "segSummary.html&u=" + user + '&c=' + summary_type;
+      if (m) {
+         s = "segSummary.html?u=" + user + '&c=' + summary_type;
+      } else {
+         s = "viewer.html?v=segSummary.html&u=" + user + '&c=' + summary_type;
+      }
     } else {
       summary_type = 'Cat';
-      s = "category_map/index.html&u=" + user + '&c=' + summary_type;
+      if (m) {
+         s = "category_map/index.html?u=" + user + '&c=' + summary_type + '&m='+ m;
+      } else {
+         s = "viewer.html?v=category_map/index.html&u=" + user + '&c=' + summary_type;
+      }
     }
-    window.location.href = "viewer.html?v=" + s;
+    window.location.href = s;
+    //window.location.href = "viewer.html?v=" + s;
   }
 
 </script>
